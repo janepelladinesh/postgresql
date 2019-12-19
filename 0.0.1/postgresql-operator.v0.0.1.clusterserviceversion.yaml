@@ -37,9 +37,6 @@ spec:
   links:
     - name: Postgresql Operator
       url: 'https://github.com/janepelladinesh/appsody-operator'
-  icon:
-    - base64data: ''
-      mediatype: ''
   customresourcedefinitions:
     owned:
       - name: postgresqls.postgresql.example.com
