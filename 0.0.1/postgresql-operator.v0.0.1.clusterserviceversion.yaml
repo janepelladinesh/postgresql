@@ -1,0 +1,155 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: ClusterServiceVersion
+metadata:
+  name: postgresql-operator.v0.0.1
+  namespace: placeholder
+  annotations:
+    alm-examples: >-
+      [{"apiVersion":"postgresql.example.com/v1alpha1","kind":"Postgresql","metadata":{"name":"example-postgresql"},"spec":{"image":"postgres:10.4","size":1}},{"apiVersion":"postgresql.example.com/v1alpha1","kind":"Postgresql","metadata":{"name":"example-postgresql"},"spec":{"image":"postgres:10.4","size":1}}]
+    categories: Database
+    certified: 'false'
+    createdAt: ''
+    description: Postgresql Operator
+    containerImage: ''
+    support: ''
+    capabilities: Full Lifecycle
+    repository: ''
+spec:
+  displayName: Postgresql Operator
+  description: |
+    ## About the managed application
+    ## About this Operator
+    ## Prerequisites for enabling this Operator
+  maturity: alpha
+  version: 0.0.1
+  replaces: ''
+  minKubeVersion: ''
+  keywords:
+    - PostgresqlOperator
+  maintainers:
+    - name: psl
+      email: psal@gmail.com
+  provider:
+    name: psl
+  labels: {}
+  selector:
+    matchLabels: {}
+  links:
+    - name: Postgresql Operator
+      url: 'https://github.com/janepelladinesh/appsody-operator'
+  icon:
+    - base64data: ''
+      mediatype: ''
+  customresourcedefinitions:
+    owned:
+      - name: postgresqls.postgresql.example.com
+        displayName: Postgresql Operator
+        kind: Postgresql
+        version: v1alpha1
+        description: Postgresql Operator
+        resources:
+          - version: v1
+            kind: Deployment
+          - version: v1
+            kind: Service
+          - version: v1
+            kind: ReplicaSet
+          - version: v1
+            kind: Pod
+          - version: v1
+            kind: Secret
+          - version: v1
+            kind: ConfigMap
+        specDescriptors: []
+        statusDescriptors: []
+    required: []
+  install:
+    strategy: deployment
+    spec:
+      permissions:
+        - serviceAccountName: postgresql-operator
+          rules:
+            - apiGroups: '""'
+              resources:
+                - pods
+                - services
+                - endpoints
+                - persistentvolumeclaims
+                - events
+                - configmaps
+                - secrets
+              verbs:
+                - '*'
+            - apiGroups: apps
+              resources:
+                - deployments
+                - daemonsets
+                - replicasets
+                - statefulsets
+              verbs:
+                - '*'
+            - apiGroups: monitoring.coreos.com
+              resources:
+                - servicemonitors
+              verbs:
+                - get
+                - create
+            - apiGroups: apps
+              resources:
+                - deployments
+              verbs:
+                - update
+            - apiGroups: '""'
+              resources:
+                - pods
+              verbs:
+                - get
+      clusterPermissions: []
+      deployments:
+        - name: postgresql-operator
+          spec:
+            replicas: 1
+            selector:
+              matchLabels:
+                k8s-app: postgresql-operator
+            template:
+              metadata:
+                labels:
+                  k8s-app: example-operator
+              spec:
+                containers:
+                  image: quay.io/deekshah86/postgresql-operator
+                  imagePullPolicy: Always
+                  name: postgresql-operator
+                  resources:
+                    limits:
+                      cpu: 200m
+                      memory: 100Mi
+                    requests:
+                      cpu: 100m
+                      memory: 50Mi
+                  env:
+                    - name: WATCH_NAMESPACE
+                      valueFrom:
+                        fieldRef:
+                          fieldPath: 'metadata.annotations[''olm.targetNamespaces'']'
+                    - name: POD_NAME
+                      valueFrom:
+                        fieldRef:
+                          fieldPath: metadata.name
+                    - name: OPERATOR_NAME
+                      value: null
+                imagePullSecrets:
+                  - name: ''
+                nodeSelector:
+                  beta.kubernetes.io/os: linux
+                serviceAccountName: postgresql-operator
+  installModes:
+    - type: OwnNamespace
+      supported: true
+    - type: SingleNamespace
+      supported: true
+    - type: MultiNamespace
+      supported: false
+    - type: AllNamespaces
+      supported: false

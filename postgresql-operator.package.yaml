@@ -1,0 +1,4 @@
+packageName: postgresql-operator
+channels:
+  - name: alpha
+    currentCSV: postgresql-operator.v0.0.1
